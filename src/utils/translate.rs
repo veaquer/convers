@@ -65,17 +65,16 @@ impl Translator {
     /// Translates text from &String query.
     /// Example of query: `en to ru how are you?`.
     pub async fn convert(&self, text: &String) -> Result<String, TranslatorError> {
-        let parts: Vec<&str> = text.split_whitespace().collect();
-        let conv_sign_index = match parts.iter().position(|&x| x == "to" || x == ":") {
-            Some(i) => i,
-            None => return Err(TranslatorError::CustomError(CONV_ERROR.to_string())),
-        };
-        if parts.len() < 4 {
+        let re = regex::Regex::new(r"(:|to)").unwrap();
+        let parts: Vec<&str> = re.split(text).collect();
+        if parts.len() != 2 {
             return Err(TranslatorError::CustomError(CONV_ERROR.to_string()));
         }
-        let from_part = parts[..conv_sign_index].join(" ");
-        let to_part = parts[conv_sign_index + 1];
-        let text_part = parts[conv_sign_index + 2..].join(" ");
+        let from_part = parts[0].split_whitespace().collect::<String>();
+        let second_part: Vec<&str> = parts[1].split_whitespace().collect();
+        let to_part = second_part[0];
+        let text_part = second_part[1..].join(" ");
+
         self.translate(&from_part, to_part, &text_part).await
     }
 }

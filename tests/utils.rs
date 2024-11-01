@@ -79,7 +79,7 @@ async fn check_convert_async() -> Result<(), TranslatorError> {
 
 #[tokio::test]
 async fn check_magic_convert_async() -> Result<(), TranslatorError> {
-    let response = magic_convert(&String::from("250m to km")).await?;
+    let response = magic_convert(&String::from("250m:km")).await?;
     assert_eq!(response, "0.25 Kilometer");
     let tr_response = magic_convert(&String::from("en to ru no way")).await?;
     assert_eq!(tr_response, "\n [ en -> ru ] \n\n ни за что");

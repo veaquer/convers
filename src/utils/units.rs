@@ -1,3 +1,5 @@
+use regex::Regex;
+
 use super::CONV_ERROR;
 
 #[derive(Debug, PartialEq)]
@@ -144,16 +146,14 @@ impl Measurement {
     /// Converts String query to Measurement.
     /// Example: `1m to cm` returns `Measurement { value: 100.0, unit: Unit::Centimeter }` (don't forget that's wrapped in Result).
     pub fn convert(query: &String) -> Result<Self, String> {
-        let parts: Vec<&str> = query.split_whitespace().collect();
-        let conv_sign_index = match parts.iter().position(|&x| x == "to" || x == ":") {
-            Some(i) => i,
-            None => return Err(CONV_ERROR.to_string()),
-        };
-        if parts.len() != conv_sign_index + 2 {
-            return Err(CONV_ERROR.to_string());
+        let regex = Regex::new(r"(:|to)").unwrap();
+        let parts: Vec<&str> = regex.split(query).collect(); //
+
+        if parts.len() != 2 {
+            return Err(format!("Parts len != 2\n{}", CONV_ERROR.to_string()));
         }
-        let from_part = parts[..conv_sign_index].join(" ");
-        let to_part = parts[conv_sign_index + 1..].join(" ");
+        let from_part = parts[0].split_whitespace().collect::<String>();
+        let to_part = parts[1].split_whitespace().collect::<String>();
         let from = match Measurement::from_str(&from_part) {
             Some(m) => m,
             None => return Err(CONV_ERROR.to_string()),
