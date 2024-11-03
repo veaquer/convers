@@ -86,6 +86,8 @@ async fn check_magic_convert_async() -> Result<(), ConvertError> {
     assert_eq!(response, "0.25 Kilometer");
     let tr_response = magic_convert(&String::from("en to ru no way")).await?;
     assert_eq!(tr_response, "\n [ en -> ru ] \n\n ни за что");
+    let calc_response = magic_convert(&String::from("15/3")).await?;
+    assert_eq!(calc_response, "5");
     Ok(())
 }
 

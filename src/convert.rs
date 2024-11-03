@@ -1,4 +1,5 @@
 use crate::utils::{
+    calc::eval,
     translate::{ConvertError, Translator},
     units::Measurement,
 };
@@ -11,6 +12,9 @@ pub async fn magic_convert(query: &String) -> Result<String, ConvertError> {
     let tr = Translator::new();
     if let Ok(resp) = measure_response {
         return Ok(resp.txt());
+    }
+    if let Ok(resp) = eval(query) {
+        return Ok(resp.to_string());
     }
     let translate_response = tr.convert(query).await?;
     Ok(translate_response)
