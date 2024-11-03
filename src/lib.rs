@@ -4,7 +4,7 @@
 //! The idea is to convert everything in one query, like text, units, just whatever.
 //! Here are magic_convert function that can convert units and translate text.
 //! ## Example of usage `magic_convert`:
-//!
+//!```
 //! use convers::convert::magic_convert;
 //! use tokio::runtime::Runtime;
 //!
