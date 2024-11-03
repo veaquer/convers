@@ -17,7 +17,7 @@ use convers::convert::magic_convert;
  ```
 
  ## Current available conversions:
- - Units:Length, Mass, Ampers, Watts
+ - Units:Length, Mass, Ampers, Watts,Size(like kb),Rem/Px/Em
  - Translate
  - Evaluate
 
