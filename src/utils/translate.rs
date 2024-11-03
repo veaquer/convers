@@ -6,23 +6,23 @@ use serde_json::Value;
 use super::CONV_ERROR;
 
 #[derive(Debug)]
-pub enum TranslatorError {
+pub enum ConvertError {
     ReqwestError(Error),
     CustomError(String),
 }
 
-impl fmt::Display for TranslatorError {
+impl fmt::Display for ConvertError {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self {
-            TranslatorError::ReqwestError(e) => write!(f, "Reqwest error: {}", e),
-            TranslatorError::CustomError(e) => write!(f, "Custom error: {}", e),
+            ConvertError::ReqwestError(e) => write!(f, "Reqwest error: {}", e),
+            ConvertError::CustomError(e) => write!(f, "Custom error: {}", e),
         }
     }
 }
 
-impl From<Error> for TranslatorError {
+impl From<Error> for ConvertError {
     fn from(error: Error) -> Self {
-        TranslatorError::ReqwestError(error)
+        ConvertError::ReqwestError(error)
     }
 }
 
@@ -37,7 +37,7 @@ impl Translator {
         from: &str,
         to: &str,
         text: &str,
-    ) -> Result<String, TranslatorError> {
+    ) -> Result<String, ConvertError> {
         let url = format!(
             "https://translate.googleapis.com/translate_a/single?client=gtx&sl={}&tl={}&dt=t&q={}",
             from, to, text
@@ -52,23 +52,23 @@ impl Translator {
                         .filter_map(|v| v.as_str().map(|s| s.to_string()))
                         .collect();
                     if str_vec.is_empty() {
-                        return Err(TranslatorError::CustomError("Invalid response".to_string()));
+                        return Err(ConvertError::CustomError("Invalid response".to_string()));
                     }
 
                     return Ok(format!("\n [ {} -> {} ] \n\n {}", from, to, str_vec[0]));
                 }
             }
         }
-        Err(TranslatorError::CustomError("Invalid response".to_string()))
+        Err(ConvertError::CustomError("Invalid response".to_string()))
     }
 
     /// Translates text from &String query.
     /// Example of query: `en to ru how are you?`.
-    pub async fn convert(&self, text: &String) -> Result<String, TranslatorError> {
+    pub async fn convert(&self, text: &String) -> Result<String, ConvertError> {
         let re = regex::Regex::new(r"(:|to)").unwrap();
         let parts: Vec<&str> = re.split(text).collect();
         if parts.len() != 2 {
-            return Err(TranslatorError::CustomError(CONV_ERROR.to_string()));
+            return Err(ConvertError::CustomError(CONV_ERROR.to_string()));
         }
         let from_part = parts[0].split_whitespace().collect::<String>();
         let second_part: Vec<&str> = parts[1].split_whitespace().collect();

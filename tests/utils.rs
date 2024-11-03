@@ -1,7 +1,10 @@
+use std::num::ParseFloatError;
+
 use convers::{
     convert::magic_convert,
     utils::{
-        translate::{Translator, TranslatorError},
+        calc::eval,
+        translate::{ConvertError, Translator},
         units::{Measurement, Unit},
     },
 };
@@ -70,7 +73,7 @@ fn check_convert() -> Result<(), String> {
 }
 
 #[tokio::test]
-async fn check_convert_async() -> Result<(), TranslatorError> {
+async fn check_convert_async() -> Result<(), ConvertError> {
     let tr = Translator::new();
     let response = tr.translate("en", "ru", "no way").await?;
     assert_eq!(response, "\n [ en -> ru ] \n\n ни за что");
@@ -78,10 +81,16 @@ async fn check_convert_async() -> Result<(), TranslatorError> {
 }
 
 #[tokio::test]
-async fn check_magic_convert_async() -> Result<(), TranslatorError> {
+async fn check_magic_convert_async() -> Result<(), ConvertError> {
     let response = magic_convert(&String::from("250m:km")).await?;
     assert_eq!(response, "0.25 Kilometer");
     let tr_response = magic_convert(&String::from("en to ru no way")).await?;
     assert_eq!(tr_response, "\n [ en -> ru ] \n\n ни за что");
+    Ok(())
+}
+
+#[test]
+fn check_eval() -> Result<(), ParseFloatError> {
+    assert_eq!(5., eval(&String::from("15/3"))?);
     Ok(())
 }
