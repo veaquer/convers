@@ -1,8 +1,8 @@
 [package]
 name = "convers"
-version = "0.1.4"
+version = "0.1.5"
 license = "MIT"
-description = "Cool convert library that converts almost everything(not yet)."
+description = "Cool convert library that converts almost everything(not yet).Units,Languages,Calculations,etc."
 edition = "2021"
 documentation = "https://docs.rs/convers"
 repository = "https://github.com/veaquer/convers"

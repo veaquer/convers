@@ -6,12 +6,26 @@ There are function that allow to do something like that.
 
 ## Example of usage `magic_convert` function:
 ```rust
+use convers::convert::magic_convert;
  #[tokio::main]
  async fn main() {
  	 let query = "1m to cm".to_string();
- 	 let result = magic_convert(&query).await.unwrap();
- 	 let translate_result = magic_convert(&"en:de how are u?".to_string()).await.unwrap();
- 	 println!("{}", result); // prints translated text
- 	 println!("{}", result); // prints "100.0 Centimeter"
+ 	 let result = magic_convert(&query).await.unwrap(); // Is String - "100 Centimeters"
+ 	 let translate_result = magic_convert(&String::from("en:de how are u?"))).await.unwrap(); // Is String - "wie geht es dir?" or smth like that
+   let calculated = magic_convert(&String::from("15/3")).await.unwrap(); // Is String - "5" or "5.0"
  }
  ```
+
+ ## Current available conversions:
+ - Units:Length, Mass, Ampers, Watts
+ - Translate
+ - Evaluate
+
+ ## User Interfaces for **convers**:
+ - [convers_prompt](https://github.com/veaquer/convers_prompt)(Works only in linux) - That's attempt to create something comfy like raycast.(Soon it will be better)
+
+ # Soon will be added:
+ - More units
+ - Conversion of timezones, currencies
+ - Conversion of temperature, pressure, speed, volume, area, etc.
+ - CLI convers binary package to crates.io and aur
