@@ -1,8 +1,9 @@
+use std::ops::{Add, Div, Mul, Sub};
+
+use anyhow::{bail, Result};
 use regex::Regex;
 
-use super::CONV_ERROR;
-
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Copy, Clone)]
 pub enum Unit {
     Meter,
     Centimeter,
@@ -40,7 +41,7 @@ pub enum Unit {
     Em,
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Clone, Copy)]
 pub struct Measurement {
     pub value: f64,
     pub unit: Unit,
@@ -48,47 +49,54 @@ pub struct Measurement {
 
 impl Measurement {
     /// That function is used to convert Unit to default base unit from SI system.
-    pub fn to_base(&self) -> f64 {
-        match self.unit {
-            Unit::Meter => self.value,
-            Unit::Centimeter => self.value / 100.0,
-            Unit::Millimeter => self.value / 1000.0,
-            Unit::Kilometer => self.value * 1000.0,
-            Unit::Decimeter => self.value / 10.0,
-            Unit::Hectometer => self.value * 100.0,
-            Unit::Decameter => self.value * 10.0,
-            Unit::Kilogram => self.value,
-            Unit::Gram => self.value / 1000.0,
-            Unit::Milligram => self.value / 1_000_000.0,
-            Unit::Microgram => self.value / 1_000_000_000.0,
-            Unit::Ton => self.value * 1000.0,
-            Unit::Pound => self.value * 0.453592,
-            Unit::Ounce => self.value * 0.0283495,
-            Unit::Ampere => self.value,
-            Unit::Milliampere => self.value / 1000.0,
-            Unit::Volt => self.value,
-            Unit::Millivolt => self.value / 1000.0,
-            Unit::Watt => self.value,
-            Unit::Kilowatt => self.value * 1000.0,
-            Unit::Joule => self.value,
-            Unit::Kilojoule => self.value * 1000.0,
-            Unit::Second => self.value,
-            Unit::Minute => self.value * 60.0,
-            Unit::Hour => self.value * 3600.0,
-            Unit::Byte => self.value,
-            Unit::Kilobyte => self.value * 1024.0,
-            Unit::Megabyte => self.value * 1024.0 * 1024.0,
-            Unit::Gigabyte => self.value * 1024.0 * 1024.0 * 1024.0,
-            Unit::Terabyte => self.value * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-            Unit::Petabyte => self.value * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
-            Unit::Pixel => self.value,
-            Unit::Rem => self.value * 16.0, // Assuming 1 rem = 16 pixels
-            Unit::Em => self.value * 16.0,  // Assuming 1 em = 16 pixels
+    pub fn to_base(&self) -> Self {
+        let (value, base_unit) = match self.unit {
+            Unit::Meter => (self.value, Unit::Meter),
+            Unit::Centimeter => (self.value / 100.0, Unit::Meter),
+            Unit::Millimeter => (self.value / 1000.0, Unit::Meter),
+            Unit::Kilometer => (self.value * 1000.0, Unit::Meter),
+            Unit::Decimeter => (self.value / 10.0, Unit::Meter),
+            Unit::Hectometer => (self.value * 100.0, Unit::Meter),
+            Unit::Decameter => (self.value * 10.0, Unit::Meter),
+            Unit::Kilogram => (self.value, Unit::Kilogram),
+            Unit::Gram => (self.value / 1000.0, Unit::Kilogram),
+            Unit::Milligram => (self.value / 1_000_000.0, Unit::Kilogram),
+            Unit::Microgram => (self.value / 1_000_000_000.0, Unit::Kilogram),
+            Unit::Ton => (self.value * 1000.0, Unit::Kilogram),
+            Unit::Pound => (self.value * 0.453592, Unit::Kilogram),
+            Unit::Ounce => (self.value * 0.0283495, Unit::Kilogram),
+            Unit::Ampere => (self.value, Unit::Ampere),
+            Unit::Milliampere => (self.value / 1000.0, Unit::Ampere),
+            Unit::Volt => (self.value, Unit::Volt),
+            Unit::Millivolt => (self.value / 1000.0, Unit::Volt),
+            Unit::Watt => (self.value, Unit::Watt),
+            Unit::Kilowatt => (self.value * 1000.0, Unit::Watt),
+            Unit::Joule => (self.value, Unit::Joule),
+            Unit::Kilojoule => (self.value * 1000.0, Unit::Joule),
+            Unit::Second => (self.value, Unit::Second),
+            Unit::Minute => (self.value * 60.0, Unit::Second),
+            Unit::Hour => (self.value * 3600.0, Unit::Second),
+            Unit::Byte => (self.value, Unit::Byte),
+            Unit::Kilobyte => (self.value * 1024.0, Unit::Byte),
+            Unit::Megabyte => (self.value * 1024.0 * 1024.0, Unit::Byte),
+            Unit::Gigabyte => (self.value * 1024.0 * 1024.0 * 1024.0, Unit::Byte),
+            Unit::Terabyte => (self.value * 1024.0 * 1024.0 * 1024.0 * 1024.0, Unit::Byte),
+            Unit::Petabyte => (
+                self.value * 1024.0 * 1024.0 * 1024.0 * 1024.0 * 1024.0,
+                Unit::Byte,
+            ),
+            Unit::Pixel => (self.value, Unit::Pixel),
+            Unit::Rem => (self.value * 16.0, Unit::Pixel), // Assuming 1 rem = 16 pixels
+            Unit::Em => (self.value * 16.0, Unit::Pixel),  // Assuming 1 em = 16 pixels
+        };
+        Measurement {
+            value,
+            unit: base_unit,
         }
     }
     // That function is used to convert Measurement to other unit.
     pub fn to_other(&self, target_unit: Unit) -> Self {
-        let base_value = self.to_base();
+        let base_value = self.to_base().value;
         let target_value = match target_unit {
             Unit::Meter => base_value,
             Unit::Centimeter => base_value * 100.0,
@@ -145,22 +153,22 @@ impl Measurement {
     }
     /// Converts String query to Measurement.
     /// Example: `1m to cm` returns `Measurement { value: 100.0, unit: Unit::Centimeter }` (don't forget that's wrapped in Result).
-    pub fn convert(query: &String) -> Result<Self, String> {
+    pub fn convert(query: &String) -> Result<Self> {
         let regex = Regex::new(r"(:|to)").unwrap();
         let parts: Vec<&str> = regex.split(query).collect(); //
 
         if parts.len() != 2 {
-            return Err(format!("Parts len != 2\n{}", CONV_ERROR.to_string()));
+            bail!("Invalid conversion query: error parsing parts.");
         }
         let from_part = parts[0].split_whitespace().collect::<String>();
         let to_part = parts[1].split_whitespace().collect::<String>();
         let from = match Measurement::from_str(&from_part) {
             Some(m) => m,
-            None => return Err(CONV_ERROR.to_string()),
+            None => bail!("Invalid conversion query: error parsing from part."),
         };
         let to = match Measurement::from_str(&to_part) {
             Some(m) => m,
-            None => return Err("Invalid conversion query: error parsing to part".to_string()),
+            None => bail!("Invalid conversion query: error parsing to part"),
         };
         Ok(from.to_other(to.unit))
     }
@@ -221,5 +229,64 @@ impl Measurement {
             _ => return None,
         }
         Some(new_length)
+    }
+    pub fn new(value: f64, unit: Unit) -> Self {
+        Self { value, unit }
+    }
+}
+
+impl Add for Measurement {
+    type Output = Result<Self>;
+
+    fn add(self, other: Self) -> Result<Self> {
+        if self.to_base().unit != other.to_base().unit {
+            bail!("Cannot add measurements with different units.");
+        }
+        Ok(Self {
+            value: self.to_other(other.unit).value + other.value,
+            unit: other.unit,
+        })
+    }
+}
+
+impl Sub for Measurement {
+    type Output = Result<Self>;
+
+    fn sub(self, other: Self) -> Result<Self> {
+        if self.to_base().unit != other.to_base().unit {
+            bail!("Cannot subtract measurements with different units.");
+        }
+        Ok(Self {
+            value: self.to_other(other.unit).value - other.value,
+            unit: other.unit,
+        })
+    }
+}
+
+impl Mul for Measurement {
+    type Output = Result<Self>;
+
+    fn mul(self, other: Self) -> Result<Self> {
+        if self.to_base().unit != other.to_base().unit {
+            bail!("Cannot subtract measurements with different units.");
+        }
+        Ok(Self {
+            value: self.to_other(other.unit).value * other.value,
+            unit: other.unit,
+        })
+    }
+}
+
+impl Div for Measurement {
+    type Output = Result<Self>;
+
+    fn div(self, other: Self) -> Result<Self> {
+        if self.to_base().unit != other.to_base().unit {
+            bail!("Cannot subtract measurements with different units.");
+        }
+        Ok(Self {
+            value: self.to_other(other.unit).value / other.value,
+            unit: other.unit,
+        })
     }
 }
