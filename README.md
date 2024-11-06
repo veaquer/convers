@@ -31,7 +31,7 @@ use convers::convert::magic_convert;
  ```
 
  ## Current available conversions:
- - **Units**:Length, Mass, Ampers, Watts,Size(like kb),Rem/Px/Em
+ - **Units**:Length, Mass, Ampers, Watts,Size(like kb),Rem/Px/Em, Temperature, Pressure, Speed, Volume, Area
  - **Translate**
  - **Evaluate (with Units too)**
  ## User Interfaces for **convers**:

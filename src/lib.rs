@@ -25,7 +25,8 @@
 //! let c = a + b; // anyhow::Result<Measurement>. If unwrap it equals 1.050 Kilometer
 //! ```
 //! ## Current available conversions:
-//! - **Units**: Length, Mass, Amperes, Watts, Size (like kb), Rem/Px/Em
+//! - **Units**: Length, Mass, Amperes, Watts, Size (like kb), Rem/Px/Em,Temperature, Pressure, Speed, Volume, Area
+//!- **Translate**
 //! - **Translate**
 //! - **Evaluate (with Units too)**
 //! ## User Interfaces for **convers**:
