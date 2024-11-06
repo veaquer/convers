@@ -145,7 +145,7 @@ impl Measurement {
 
     /// Returns is measurement in str valid.
     pub fn is_this(query: &String) -> bool {
-        if let Some(_) = Measurement::from_str(query) {
+        if let Ok(_) = Measurement::from_str(query) {
             true
         } else {
             false
@@ -163,18 +163,18 @@ impl Measurement {
         let from_part = parts[0].split_whitespace().collect::<String>();
         let to_part = parts[1].split_whitespace().collect::<String>();
         let from = match Measurement::from_str(&from_part) {
-            Some(m) => m,
-            None => bail!("Invalid conversion query: error parsing from part."),
+            Ok(m) => m,
+            Err(_) => bail!("Invalid conversion query: error parsing from part."),
         };
         let to = match Measurement::from_str(&to_part) {
-            Some(m) => m,
-            None => bail!("Invalid conversion query: error parsing to part"),
+            Ok(m) => m,
+            Err(_) => bail!("Invalid conversion query: error parsing to part"),
         };
         Ok(from.to_other(to.unit))
     }
 
     /// Formats &String to Measurement.
-    pub fn from_str(query: &String) -> Option<Box<Self>> {
+    pub fn from_str(query: &String) -> Result<Box<Self>> {
         let mut new_length = Box::new(Measurement {
             value: 0.,
             unit: Unit::Meter,
@@ -189,7 +189,7 @@ impl Measurement {
         };
         let unit_part = query.chars().skip(val_str.len()).collect::<String>();
         if unit_part.is_empty() {
-            return None;
+            bail!("Invalid conversion query: error parsing unit part.");
         }
         match unit_part.as_str() {
             "m" => new_length.unit = Unit::Meter,
@@ -226,9 +226,9 @@ impl Measurement {
             "px" => new_length.unit = Unit::Pixel,
             "rem" => new_length.unit = Unit::Rem,
             "em" => new_length.unit = Unit::Em,
-            _ => return None,
+            _ => bail!("Invalid conversion query: error parsing unit part."),
         }
-        Some(new_length)
+        Ok(new_length)
     }
     pub fn new(value: f64, unit: Unit) -> Self {
         Self { value, unit }
@@ -243,8 +243,8 @@ impl Add for Measurement {
             bail!("Cannot add measurements with different units.");
         }
         Ok(Self {
-            value: self.to_other(other.unit).value + other.value,
-            unit: other.unit,
+            value: self.value + other.to_other(self.unit).value,
+            unit: self.unit,
         })
     }
 }
@@ -257,8 +257,8 @@ impl Sub for Measurement {
             bail!("Cannot subtract measurements with different units.");
         }
         Ok(Self {
-            value: self.to_other(other.unit).value - other.value,
-            unit: other.unit,
+            value: self.value - other.to_other(self.unit).value,
+            unit: self.unit,
         })
     }
 }
@@ -271,8 +271,8 @@ impl Mul for Measurement {
             bail!("Cannot subtract measurements with different units.");
         }
         Ok(Self {
-            value: self.to_other(other.unit).value * other.value,
-            unit: other.unit,
+            value: self.value * other.to_other(self.unit).value,
+            unit: self.unit,
         })
     }
 }
@@ -285,8 +285,8 @@ impl Div for Measurement {
             bail!("Cannot subtract measurements with different units.");
         }
         Ok(Self {
-            value: self.to_other(other.unit).value / other.value,
-            unit: other.unit,
+            value: self.value / other.to_other(self.unit).value,
+            unit: self.unit,
         })
     }
 }

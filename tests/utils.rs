@@ -2,7 +2,7 @@ use anyhow::Result;
 use convers::{
     convert::magic_convert,
     utils::{
-        calc::eval,
+        calc::{eval, meval},
         translate::Translator,
         units::{Measurement, Unit},
     },
@@ -60,8 +60,8 @@ fn check_length_unit() {
     };
     let c = a + b;
     let d = Measurement {
-        value: 30.030,
-        unit: Unit::Kilometer,
+        value: 30030.,
+        unit: Unit::Meter,
     };
     assert_eq!(c.unwrap(), d);
     assert_eq!(
@@ -104,6 +104,8 @@ async fn check_magic_convert_async() -> Result<()> {
 
 #[test]
 fn check_eval() -> Result<()> {
+    let measur = Measurement::new(100., Unit::Meter);
+    assert_eq!(measur, meval(&String::from("50m+50m"))?);
     assert_eq!(5., eval(&String::from("15/3"))?);
     Ok(())
 }

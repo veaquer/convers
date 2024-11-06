@@ -1,4 +1,8 @@
-use crate::utils::{calc::eval, translate::Translator, units::Measurement};
+use crate::utils::{
+    calc::{eval, meval},
+    translate::Translator,
+    units::Measurement,
+};
 use anyhow::Result;
 
 /// This is magic function that's used to convert units and translate text
@@ -12,6 +16,9 @@ pub async fn magic_convert(query: &String) -> Result<String> {
     }
     if let Ok(resp) = eval(query) {
         return Ok(resp.to_string());
+    }
+    if let Ok(resp) = meval(query) {
+        return Ok(resp.txt());
     }
     let translate_response = tr.convert(query).await?;
     Ok(translate_response)
