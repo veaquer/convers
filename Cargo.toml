@@ -1,6 +1,6 @@
 [package]
 name = "convers"
-version = "0.1.7"
+version = "0.1.8"
 license = "MIT"
 description = "Cool convert library that converts almost everything(not yet).Units,Languages,Calculations,etc."
 edition = "2021"

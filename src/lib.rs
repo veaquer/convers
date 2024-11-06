@@ -27,13 +27,11 @@
 //! ## Current available conversions:
 //! - **Units**: Length, Mass, Amperes, Watts, Size (like kb), Rem/Px/Em
 //! - **Translate**
-//! - **Evaluate**
+//! - **Evaluate (with Units too)**
 //! ## User Interfaces for **convers**:
 //! - [convers_prompt](https://github.com/veaquer/convers_prompt) - An attempt to create something comfy like Raycast. (Soon it will be better)
 //! # Soon will be added:
-//! - **More units**
 //! - **Conversion of timezones, currencies**
-//! - **Conversion of temperature, pressure, speed, volume, area, etc.**
 //! - **CLI convers binary package to crates.io and AUR**
 
 pub mod convert;

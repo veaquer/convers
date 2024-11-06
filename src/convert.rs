@@ -3,7 +3,7 @@ use crate::utils::{
     translate::Translator,
     units::Measurement,
 };
-use anyhow::Result;
+use anyhow::{bail, Result};
 
 /// This is magic function that's used to convert units and translate text
 /// Use that **format** for translate `lg to lg text` or `lg:lg text` where `lg` is language code.
@@ -21,5 +21,8 @@ pub async fn magic_convert(query: &String) -> Result<String> {
         return Ok(resp.txt());
     }
     let translate_response = tr.convert(query).await?;
-    Ok(translate_response)
+    if translate_response != *query {
+        return Ok(translate_response);
+    }
+    bail!("Sorry, I can't understand that query.")
 }

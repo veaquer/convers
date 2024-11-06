@@ -33,13 +33,10 @@ use convers::convert::magic_convert;
  ## Current available conversions:
  - **Units**:Length, Mass, Ampers, Watts,Size(like kb),Rem/Px/Em
  - **Translate**
- - **Evaluate**
-
+ - **Evaluate (with Units too)**
  ## User Interfaces for **convers**:
  - [convers_prompt](https://github.com/veaquer/convers_prompt) - That's at!tempt to create something comfy like raycast.(Soon it will be better)
 
  # Soon will be added:
- - **More units**
  - **Conversion of timezones, currencies**
- - **Conversion of temperature, pressure, speed, volume, area, etc.**
  - **CLI convers binary package to crates.io and aur**

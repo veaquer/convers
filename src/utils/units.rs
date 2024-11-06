@@ -39,6 +39,22 @@ pub enum Unit {
     Pixel,
     Rem,
     Em,
+    Celsius,
+    Fahrenheit,
+    Kelvin,
+    Pascal,
+    Bar,
+    Atmosphere,
+    MeterPerSecond,
+    KilometerPerHour,
+    MilePerHour,
+    Liter,
+    Milliliter,
+    CubicMeter,
+    SquareMeter,
+    SquareKilometer,
+    Hectare,
+    Acre,
 }
 
 #[derive(Debug, PartialEq, Clone, Copy)]
@@ -88,12 +104,29 @@ impl Measurement {
             Unit::Pixel => (self.value, Unit::Pixel),
             Unit::Rem => (self.value * 16.0, Unit::Pixel), // Assuming 1 rem = 16 pixels
             Unit::Em => (self.value * 16.0, Unit::Pixel),  // Assuming 1 em = 16 pixels
+            Unit::Celsius => (self.value, Unit::Celsius),
+            Unit::Fahrenheit => ((self.value - 32.0) * 5.0 / 9.0, Unit::Celsius),
+            Unit::Kelvin => (self.value - 273.15, Unit::Celsius),
+            Unit::Pascal => (self.value, Unit::Pascal),
+            Unit::Bar => (self.value * 100_000.0, Unit::Pascal),
+            Unit::Atmosphere => (self.value * 101_325.0, Unit::Pascal),
+            Unit::MeterPerSecond => (self.value, Unit::MeterPerSecond),
+            Unit::KilometerPerHour => (self.value / 3.6, Unit::MeterPerSecond),
+            Unit::MilePerHour => (self.value * 0.44704, Unit::MeterPerSecond),
+            Unit::Liter => (self.value / 1000.0, Unit::CubicMeter),
+            Unit::Milliliter => (self.value / 1_000_000.0, Unit::CubicMeter),
+            Unit::CubicMeter => (self.value, Unit::CubicMeter),
+            Unit::SquareMeter => (self.value, Unit::SquareMeter),
+            Unit::SquareKilometer => (self.value * 1_000_000.0, Unit::SquareMeter),
+            Unit::Hectare => (self.value * 10_000.0, Unit::SquareMeter),
+            Unit::Acre => (self.value * 4_046.86, Unit::SquareMeter),
         };
         Measurement {
             value,
             unit: base_unit,
         }
     }
+
     // That function is used to convert Measurement to other unit.
     pub fn to_other(&self, target_unit: Unit) -> Self {
         let base_value = self.to_base().value;
@@ -132,12 +165,29 @@ impl Measurement {
             Unit::Pixel => base_value,
             Unit::Rem => base_value / 16.0, // Assuming 1 rem = 16 pixels
             Unit::Em => base_value / 16.0,  // Assuming 1 em = 16 pixels
+            Unit::Celsius => base_value,
+            Unit::Fahrenheit => (base_value * 9.0 / 5.0) + 32.0,
+            Unit::Kelvin => base_value + 273.15,
+            Unit::Pascal => base_value,
+            Unit::Bar => base_value / 100_000.0,
+            Unit::Atmosphere => base_value / 101_325.0,
+            Unit::MeterPerSecond => base_value,
+            Unit::KilometerPerHour => base_value * 3.6,
+            Unit::MilePerHour => base_value / 0.44704,
+            Unit::Liter => base_value * 1000.0,
+            Unit::Milliliter => base_value * 1_000_000.0,
+            Unit::CubicMeter => base_value,
+            Unit::SquareMeter => base_value,
+            Unit::SquareKilometer => base_value / 1_000_000.0,
+            Unit::Hectare => base_value / 10_000.0,
+            Unit::Acre => base_value / 4_046.86,
         };
         Measurement {
             value: target_value,
             unit: target_unit,
         }
     }
+
     /// Returns String formated value and unit.
     pub fn txt(&self) -> String {
         format!("{} {:?}", self.value, self.unit)
@@ -151,6 +201,7 @@ impl Measurement {
             false
         }
     }
+
     /// Converts String query to Measurement.
     /// Example: `1m to cm` returns `Measurement { value: 100.0, unit: Unit::Centimeter }` (don't forget that's wrapped in Result).
     pub fn convert(query: &String) -> Result<Self> {
