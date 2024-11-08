@@ -1,4 +1,5 @@
 use anyhow::{bail, Context, Result};
+use regex_split::RegexSplit;
 use serde_json::Value;
 use std::{fmt, io::Error};
 
@@ -58,14 +59,29 @@ impl Translator {
     /// Example of query: `en to ru how are you?`.
     pub async fn convert(&self, text: &String) -> anyhow::Result<String> {
         let re = regex::Regex::new(r"(:|to)").unwrap();
-        let parts: Vec<&str> = re.split(text).collect();
+        let parts: Vec<&str> = re.split_inclusive(text).collect();
         if parts.len() < 2 {
             bail!("Invalid conversion query: error parsing parts.");
         }
-        let from_part = parts[0].split_whitespace().collect::<String>();
+        let from_part = parts[0]
+            .split_whitespace()
+            .collect::<Vec<&str>>()
+            .get(0)
+            .unwrap_or(&"en")
+            .to_string();
         let second_part: Vec<&str> = parts[1].split_whitespace().collect();
         let to_part = second_part[0];
-        let text_part = second_part[1..].join(" ");
+        let text_part: String = parts
+            .iter()
+            .skip(1)
+            .map(|x| *x)
+            .collect::<Vec<&str>>()
+            .join(" ")
+            .split_whitespace()
+            .collect::<Vec<&str>>()
+            .get(1..)
+            .unwrap_or(&Vec::new())
+            .join(" ");
 
         self.translate(&from_part, to_part, &text_part)
             .await
