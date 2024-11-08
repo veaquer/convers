@@ -1,5 +1,6 @@
 use crate::utils::{
     calc::{eval, meval},
+    currency::curr_convert_q,
     translate::Translator,
     units::Measurement,
 };
@@ -20,9 +21,13 @@ pub async fn magic_convert(query: &String) -> Result<String> {
     if let Ok(resp) = meval(query) {
         return Ok(resp.txt());
     }
+    if let Ok(resp) = curr_convert_q(query).await {
+        return Ok(resp.txt());
+    }
     let translate_response = tr.convert(query).await?;
     if translate_response != *query {
         return Ok(translate_response);
     }
+
     bail!("Sorry, I can't understand that query.")
 }

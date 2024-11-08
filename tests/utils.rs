@@ -3,6 +3,7 @@ use convers::{
     convert::magic_convert,
     utils::{
         calc::{eval, meval},
+        currency::{curr_convert, curr_convert_q},
         translate::Translator,
         units::{Measurement, Unit},
     },
@@ -77,6 +78,15 @@ fn check_length_unit() {
     assert_eq!(length_in_decameters.to_base().value, 1.0);
 }
 
+#[tokio::test]
+async fn check_currencies() -> Result<()> {
+    let converted_currency = curr_convert("usd", "uah", 1.).await?;
+    println!("Converted currency:{:?}", converted_currency);
+    let conv_curr = curr_convert_q(&String::from("1usd:uah")).await?;
+    println!("Converted currency:{:?}", conv_curr);
+    Ok(())
+}
+
 #[test]
 fn check_convert() -> Result<()> {
     let response = Measurement::convert(&String::from("250m to km"))?;
@@ -99,6 +109,8 @@ async fn check_magic_convert_async() -> Result<()> {
     assert_eq!(tr_response, "\n [ en -> ru ] \n\n ни за что");
     magic_convert(&String::from("en:ru how to talk to you?")).await?;
     let calc_response = magic_convert(&String::from("15/3")).await?;
+    let curr_resp = magic_convert(&String::from("1 usd:uah")).await?;
+    println!("Magic currency:{:?}", curr_resp);
     assert_eq!(calc_response, "5");
     Ok(())
 }
