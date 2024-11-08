@@ -68,7 +68,8 @@ impl Translator {
             .collect::<Vec<&str>>()
             .get(0)
             .unwrap_or(&"en")
-            .to_string();
+            .to_string()
+            .replace(":", "");
         let second_part: Vec<&str> = parts[1].split_whitespace().collect();
         let to_part = second_part[0];
         let text_part: String = parts
