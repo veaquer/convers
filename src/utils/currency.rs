@@ -36,6 +36,7 @@ impl Currency {
     }
 }
 
+// Converts currency from args.
 pub async fn curr_convert(from: &str, to: &str, amount: f64) -> Result<Currency> {
     let response = reqwest::get(
         "https://open.er-api.com/v6/latest/".to_owned() + from.to_uppercase().as_str(),
@@ -59,6 +60,7 @@ pub async fn curr_convert(from: &str, to: &str, amount: f64) -> Result<Currency>
     Ok(curr)
 }
 
+// Converts currency from String query.
 pub async fn curr_convert_q(query: &String) -> Result<Currency> {
     let regex = Regex::new(r"(:|to)").unwrap();
     let parts: Vec<&str> = regex.split(query).collect(); //

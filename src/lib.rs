@@ -13,6 +13,9 @@
 //!     let calculated = magic_convert(&String::from("15/3")).await.unwrap(); // Is String - "5" or "5.0"
 //! }
 //! ```
+//! ## What's new in release ?
+//! - Translate bug fix ('to' and ':' issue)
+//! - Convert currencies(available in magic_convert)
 //! ## Also you can use provided things directly:
 //! - _Translator_ *struct*
 //! - _Measurement_ *struct*
@@ -28,11 +31,12 @@
 //! - **Units**: Length, Mass, Amperes, Watts, Size (like kb), Rem/Px/Em,Temperature, Pressure, Speed, Volume, Area
 //!- **Translate**
 //! - **Translate**
+//! - **Currencies**
 //! - **Evaluate (with Units too)**
 //! ## User Interfaces for **convers**:
 //! - [convers_prompt](https://github.com/veaquer/convers_prompt) - An attempt to create something comfy like Raycast. (Soon it will be better)
 //! # Soon will be added:
-//! - **Conversion of timezones, currencies**
+//! - **Conversion of timezones**
 //! - **CLI convers binary package to crates.io and AUR**
 
 pub mod convert;
